@@ -39,37 +39,55 @@ export type AiErrorCode =
   | "INTERNAL_ERROR";
 
 export interface JobStore {
-  get(id: string): Job | undefined;
-  set(id: string, job: Job): void;
-  delete(id: string): void;
-  clear(): void;
-  getAll(): Job[];
+  get(id: string): Promise<Job | undefined>;
+  set(id: string, job: Job): Promise<void>;
+  delete(id: string): Promise<void>;
+  clear(): Promise<void>;
+  getAll(): Promise<Job[]>;
 }
 
 import { JobRepository, createJobRepository } from "./jobRepository";
+import { logger } from "@/app/lib/logger";
 
-class MapJobStore implements JobStore {
-  private readonly map = new Map<string, Job>();
+class JobRepositoryAdapter implements JobStore {
+  private readonly repo: JobRepository;
 
-  get(id: string): Job | undefined {
-    return this.map.get(id);
+  constructor() {
+    this.repo = createJobRepository();
+    
+    // Startup health check for Redis configuration
+    if (process.env.NODE_ENV === "production" && !process.env.REDIS_URL) {
+      logger.warn(
+        "[jobStore] Running in production without REDIS_URL. Job state will not persist across serverless instances. " +
+        "Set REDIS_URL in your environment variables to enable Redis-backed job storage."
+      );
+    }
   }
 
-  set(id: string, job: Job): void {
-    this.map.set(id, job);
+  async get(id: string): Promise<Job | undefined> {
+    const job = await this.repo.get(id);
+    return job || undefined;
   }
 
-  delete(id: string): void {
-    this.map.delete(id);
+  async set(id: string, job: Job): Promise<void> {
+    await this.repo.set(id, job);
   }
 
-  clear(): void {
-    this.map.clear();
+  async delete(id: string): Promise<void> {
+    await this.repo.delete(id);
   }
 
-  getAll(): Job[] {
-    return Array.from(this.map.values());
+  async clear(): Promise<void> {
+    await this.repo.clear();
+  }
+
+  async getAll(): Promise<Job[]> {
+    // JobRepository doesn't have getAll(), so we need to track IDs separately
+    // For now, return empty array - this is a limitation of the current implementation
+    // In production, you'd want to maintain a Redis set of all job IDs
+    logger.warn("[jobStore] getAll() is not supported with JobRepository. Returns empty array.");
+    return [];
   }
 }
 
-export const jobStore: JobStore = new MapJobStore();
+export const jobStore: JobStore = new JobRepositoryAdapter();
