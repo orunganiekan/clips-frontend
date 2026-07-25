@@ -4,6 +4,8 @@ import { authOptions } from "@/app/lib/auth";
 import * as Sentry from "@sentry/nextjs";
 import { z } from "zod";
 import { logger } from "@/app/lib/logger";
+import { checkCsrf } from "@/app/lib/csrf";
+import { prisma } from "@/app/lib/prisma";
 
 export const PostOnboardingSchema = z.object({
   step: z.number().min(0),
@@ -15,6 +17,9 @@ export const OnboardingResponseSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const csrfError = checkCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -38,7 +43,14 @@ export async function POST(request: NextRequest) {
 
     const { step, data } = parsed.data;
 
-    // TODO: Replace with actual database update to save onboarding data
+    await prisma.user.update({
+      where: { email: session.user.email || "" },
+      data: {
+        onboardingStep: step,
+        onboardingData: data as any,
+      },
+    });
+
     logger.info(`[Onboarding] Saved step ${step} for user ${session.user.id}`, data);
 
     return NextResponse.json({ success: true, onboardingStep: step });

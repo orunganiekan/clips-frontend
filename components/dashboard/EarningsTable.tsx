@@ -3,13 +3,13 @@
 import React, { useEffect, useMemo } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useFilterQueryState } from "@/hooks/useFilterQueryState";
-import type { Transaction, Summary } from "@/app/lib/mockApi";
+import type { EarningTransaction, EarningsSummary } from "@/app/api/earnings/types";
 
 interface EarningsTableProps {
-  transactions: Transaction[];
-  summary: Summary;
+  transactions: EarningTransaction[];
+  summary: EarningsSummary;
   loading?: boolean;
-  onFilteredTransactionsChange?: (filtered: Transaction[]) => void;
+  onFilteredTransactionsChange?: (filtered: EarningTransaction[]) => void;
   /** Pagination from the parent (server-driven). When provided, renders prev/next controls. */
   pagination?: { page: number; pageSize: number; total: number; totalPages: number };
   onPageChange?: (page: number) => void;
@@ -72,7 +72,7 @@ export default function EarningsTable({
             value={search}
             onChange={(e) => updateFilters({ search: e.target.value })}
             placeholder="Search by ID, description or platform"
-            className="w-full bg-input text-white text-sm rounded-xl px-4 py-2.5 pr-8 border border-white/10 placeholder:text-muted-foreground focus:outline-none focus:border-brand/50"
+            className="w-full bg-input text-white text-sm rounded-xl px-4 py-2.5 pr-8 border border-white/10 placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus:border-brand/50"
           />
           {search && (
             <button
@@ -93,7 +93,7 @@ export default function EarningsTable({
               type="date"
               value={startDate}
               onChange={(e) => updateFilters({ startDate: e.target.value })}
-              className="bg-input text-white text-sm rounded-xl px-3 py-2 border border-white/10 focus:outline-none focus:border-brand/50"
+              className="bg-input text-white text-sm rounded-xl px-3 py-2 border border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus:border-brand/50"
             />
           </label>
           <label className="flex flex-col gap-1 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
@@ -102,7 +102,7 @@ export default function EarningsTable({
               type="date"
               value={endDate}
               onChange={(e) => updateFilters({ endDate: e.target.value })}
-              className="bg-input text-white text-sm rounded-xl px-3 py-2 border border-white/10 focus:outline-none focus:border-brand/50"
+              className="bg-input text-white text-sm rounded-xl px-3 py-2 border border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus:border-brand/50"
             />
           </label>
           {hasDates && (
