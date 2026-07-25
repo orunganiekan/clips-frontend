@@ -18,7 +18,7 @@ import NotFound from "../app/not-found";
 // is only available inside a Next.js app).
 
 import { createContext, useContext } from "react";
-import type { User } from "../app/lib/mockApi";
+import type { User } from "../../__mocks__/app/lib/mockApi";
 
 interface AuthContextType {
   user: User | null;

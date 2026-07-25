@@ -43,6 +43,17 @@ export interface DispatchJobPayload {
    * Format: POST <callbackUrl>  body: JobCallbackPayload
    */
   callbackUrl: string;
+  /**
+   * Optional: the visual style to apply for AI video transformation jobs
+   * (e.g. "anime", "cinematic", "sketch", "watercolor").
+   * Absent for standard clip-extraction jobs.
+   */
+  transformStyle?: string;
+  /**
+   * Optional: the source clip's object key in cloud storage, used when the
+   * job is a style-transfer transformation rather than a raw upload.
+   */
+  sourceClipKey?: string;
 }
 
 /**
