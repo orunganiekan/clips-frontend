@@ -76,7 +76,7 @@ export default function VaultPage() {
             <div className="lg:hidden w-full max-w-xs">
               <select 
                 value={activeFilter}
-                onChange={(e) => setActiveFilter(e.target.value as any)}
+                onChange={(e) => setActiveFilter(e.target.value as "pending" | "listed" | "history")}
                 className="w-full px-4 py-3 bg-input border border-white/10 rounded-xl text-white text-[14px] font-bold focus:outline-none focus:border-brand/50 transition-colors"
               >
                 <option value="pending">Pending Mint</option>

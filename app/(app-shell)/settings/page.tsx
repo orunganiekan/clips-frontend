@@ -117,8 +117,8 @@ export default function SettingsPage() {
       setImportSuccess(true);
       setImportKeyInput("");
       setTimeout(() => setImportSuccess(false), 5000);
-    } catch (err: any) {
-      setImportError(err.message || "Failed to import secret key. Make sure it starts with 'S' and is 56 characters.");
+    } catch (err: unknown) {
+      setImportError(err instanceof Error ? err.message : "Failed to import secret key. Make sure it starts with 'S' and is 56 characters.");
     }
   };
 

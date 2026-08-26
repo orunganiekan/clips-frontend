@@ -37,12 +37,11 @@ function DonutChart({ slices }: { slices: DonutSlice[] }) {
   const cy = 80;
   const strokeWidth = 22;
 
-  let cumulative = 0;
-  const arcs = slices.map((slice) => {
+  const arcs = slices.map((slice, index) => {
+    const priorSum = slices.slice(0, index).reduce((sum, item) => sum + item.value, 0);
     const pct = slice.value / total;
-    const startAngle = cumulative * 2 * Math.PI - Math.PI / 2;
-    cumulative += pct;
-    const endAngle = cumulative * 2 * Math.PI - Math.PI / 2;
+    const startAngle = (priorSum / total) * 2 * Math.PI - Math.PI / 2;
+    const endAngle = ((priorSum + slice.value) / total) * 2 * Math.PI - Math.PI / 2;
 
     const x1 = cx + R * Math.cos(startAngle);
     const y1 = cy + R * Math.sin(startAngle);

@@ -33,6 +33,8 @@ export default function MultisigPage() {
 
     useEffect(() => {
         if (address && walletType === "stellar") {
+            // Sync connected wallet address into the editable source field
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- mirror external wallet connection into form state
             setSourcePublicKey(address);
         }
     }, [address, walletType]);
